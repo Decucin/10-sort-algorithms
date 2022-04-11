@@ -15,7 +15,10 @@ public class Main {
 //        SortAlgorithms.shellSort(nums);
 //        int[] res = SortAlgorithms.mergeSort(nums);
 //        SortAlgorithms.quickSort(nums, 0, nums.length - 1);
-        SortAlgorithms.heapSort(nums);
+//        SortAlgorithms.heapSort(nums);
+//        SortAlgorithms.countingSort(nums);
+//        SortAlgorithms.bucketSort(nums);
+        SortAlgorithms.radixSort(nums);
         System.out.println("\n排序后：");
         Utils.printArray(nums);
     }

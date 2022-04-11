@@ -287,4 +287,120 @@ public class SortAlgorithms {
         }
     }
 
+    // 计数排序实现
+    public static void countingSort(int[] nums){
+        if(nums == null){
+            throw new NullPointerException("Arrays can not be empty!");
+        }
+        int n = nums.length;
+        // max - min + 1就是额外需要的空间
+        int min = nums[0];
+        int max = nums[0];
+        for(int num : nums){
+            min = Math.min(min, num);
+            max = Math.max(max, num);
+        }
+        // 开始计数
+        int[] counting = new int[max - min + 1];
+        for(int num : nums){
+            ++counting[num - min];
+        }
+        // 这里index表示的是在新开辟的空间中的下标
+        int index = 0;
+        // 对应的数就是最小的数 + 下标
+        for(int i = 0; i < n; ++i){
+            nums[i] = min + index;
+            --counting[index];
+            // 这里不加前一个判断的话最后一次必定越界
+            while (index < max - min && counting[index] == 0){
+                ++index;
+            }
+        }
+    }
+
+    // 桶排序实现
+    public static void bucketSort(int[] nums){
+        if(nums == null){
+            throw new NullPointerException("Arrays can not be empty!");
+        }
+        int n = nums.length;
+        int max = nums[0];
+        for(int num : nums){
+            max = Math.max(max, num);
+        }
+        // 这里我的映射函数是value / 10
+        // 即0 - 9 第0个桶 …… 90 — 99第9个桶
+        int[][] buckets = new int[max / 10 + 1][0];
+        for(int num : nums){
+            // 当前数所在的桶下标
+            int index = num / 10;
+            // 把这个数放到对应的桶
+            buckets[index] = appendArr(buckets[index], num);
+        }
+        // 原始数组的下标
+        int index = 0;
+        // 对每个桶进行排序并返回
+        for(int[] bucket : buckets){
+            // 长度小于等于0表示没有
+            if(bucket.length <= 0){
+                continue;
+            }
+            insertSort(bucket);
+            for(int num : bucket){
+                nums[index++] = num;
+            }
+        }
+    }
+
+    // 桶排序和基数排序中用到的把对应的数放到对应的桶的函数
+    private static int[] appendArr(int[] nums, int num){
+        // 这里是拷贝原桶，实际上性能很差
+        int n = nums.length;
+        nums = Arrays.copyOf(nums, n + 1);
+        nums[n] = num;
+        return nums;
+    }
+
+    // 基数排序实现
+    public static void radixSort(int[] nums){
+        if(nums == null){
+            throw new NullPointerException("Arrays can not be empty!");
+        }
+        int n = nums.length;
+        int max = nums[0];
+        for (int num : nums){
+            max = Math.max(max, num);
+        }
+        // 找到最高位的长度
+        int maxLen = 0;
+        if(max == 0){
+            maxLen = 1;
+        }else{
+            while(max != 0){
+                max /= 10;
+                ++maxLen;
+            }
+        }
+
+        int mod = 10;
+        int dev = 1;
+        for(int i = 0; i < maxLen; ++i, dev *= 10, mod *= 10){
+            // 扩展 0 - 9表示负数，10-19表示正数
+            int[][] counter = new int[mod * 2][0];
+            // 排maxLen次，每次排列之后在i位都是递增的
+            for (int j = 0; j < n; j++) {
+                int bucket = ((nums[j] % mod) / dev) + mod;
+                // 放入对应的位置
+                counter[bucket] = appendArr(counter[bucket], nums[j]);
+            }
+
+            int index = 0;
+            for (int[] bucket : counter) {
+                for (int value : bucket) {
+                    nums[index++] = value;
+                }
+            }
+        }
+    }
+
 }
